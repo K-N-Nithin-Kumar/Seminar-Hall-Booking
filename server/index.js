@@ -1,5 +1,5 @@
-import express from "express"
-import mongoose from "mongoose"
+const express=require("express");
+const mongoose=require("express");
 const app = express();
 
 const PORT = 5000;
