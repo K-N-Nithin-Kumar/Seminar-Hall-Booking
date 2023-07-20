@@ -14,7 +14,7 @@ const Adminlogin = asyncHandler(async (req, res) => {
     if (!email || !password) {
         res.json({ error: "Please Provide Valid Credentials" });
     }
-//HI
+//lljk
 //Prashanth
      // Email validation using regular expression
      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
