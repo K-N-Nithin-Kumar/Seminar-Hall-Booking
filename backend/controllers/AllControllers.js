@@ -6,7 +6,7 @@ const DepartmentSchema = require("../models/Department")
 const BookingSchema=require("../models/Booking")
 
 //admin login function
-const Adminlogin = asyncHandler(async (req, res) => {
+const adminLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     console.log(email,password)
@@ -25,12 +25,12 @@ const Adminlogin = asyncHandler(async (req, res) => {
 //ends email validatipn
 
 
-    const adminLogin = await AdminSchema.findOne({ email: email })
+    const AdminLogin = await AdminSchema.findOne({ email: email })
     
-    console.log(adminLogin)
+    console.log(AdminLogin)
     
  
-    if (adminLogin === null || adminLogin.password !== password) {
+    if (AdminLogin === null || AdminLogin.password !== password) {
         res.json({ error: "Please Provide Valid admin credentials" })
     } else {
         res.json({ message: "Succesfully Logged In" })
@@ -45,10 +45,10 @@ const Adminlogin = asyncHandler(async (req, res) => {
   Reference I sent in group read"
 
   const createDepartment = async (req, res) => {
-    const { Deptname, DeptInchargeName, DeptInchargeEmail, DeptInchargePasswrd } = req.body;
+    const { DeptName, DeptInchargeName, DeptInchargeEmail, DeptInchargePasswrd } = req.body;
 
     try {
-        const new_department = await DepartmentSchema.create({ Deptname, DeptInchargeName, DeptInchargeEmail, DeptInchargePasswrd });
+        const new_department = await DepartmentSchema.create({ DeptName, DeptInchargeName, DeptInchargeEmail, DeptInchargePasswrd });
         res.status(200).json(new_department);s
     } catch (err) {
         res.status(400).json({ err });
@@ -63,15 +63,15 @@ const Adminlogin = asyncHandler(async (req, res) => {
 
 //Department Creation function
 const createDepartment = asyncHandler(async(req,res)=>{
-    const { Deptname, DeptInchargeName, DeptInchargeEmail, DeptInchargePasswrd } = req.body;
+    const { DeptName, DeptInchargeName, DeptInchargeEmail, DeptInchargePassword } = req.body;
     // "ISSUE"
-    // Deptname is not getting from the request 
+    // DeptName is not getting from the request 
     // path error
     //below log printing undefined resolve this 
     //hashing is done
     //validatioin is done
-    console.log(Deptname);
-    if (!Deptname || !DeptInchargeName || !DeptInchargeEmail || !DeptInchargePasswrd){
+    console.log(DeptName);
+    if (!DeptName || !DeptInchargeName || !DeptInchargeEmail || !DeptInchargePassword){
         res.status(400);
         throw new Error("All fields are mandatory")
     }
@@ -86,13 +86,13 @@ const createDepartment = asyncHandler(async(req,res)=>{
 
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(DeptInchargePasswrd , salt);
+    const hashedPassword = await bcrypt.hash(DeptInchargePassword , salt);
     console.log(hashedPassword)
     const dept = await DepartmentSchema.create({
-        Deptname,
+        DeptName,
         DeptInchargeName,
         DeptInchargeEmail,
-        DeptInchargePasswrd:hashedPassword
+        DeptInchargePassword:hashedPassword
     })
     if(dept){
         res.status(201).json(dept);
@@ -111,7 +111,7 @@ const createDepartment = asyncHandler(async(req,res)=>{
 
 
 //admin register
-const Adminregister=async(req,res)=>
+const adminRegister=async(req,res)=>
 {
   
              const {email,password}=req.body;
@@ -134,4 +134,4 @@ const Adminregister=async(req,res)=>
 }
 
 
-module.exports = { Adminlogin,createDepartment,Adminregister}
+module.exports = { adminLogin,createDepartment,adminRegister}

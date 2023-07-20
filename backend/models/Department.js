@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 
 
 const DeptSchema = new mongoose.Schema({
-    Deptname: {
+    DeptName: {
         type: String,
         required: true
     },
@@ -15,7 +15,7 @@ const DeptSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    DeptInchargePasswrd:
+    DeptInchargePassword:
     {
         type: String,
         required: true
