@@ -10,7 +10,7 @@ const validator=require("validator")
 //email validator function
 const checkValidEmail = (email,res) => {
     if (!validator.isEmail(email)) {
-        res.status(400);
+        res.status(409);
         throw new Error("Invalid email format.");
     }
 }
@@ -24,15 +24,6 @@ const adminLogin = asyncHandler(async (req, res) => {
     if (!email || !password) {
         res.json({ error: "Please Provide Valid Credentials" });
     }
-//lljk
-//Prashanth
-     // Email validation using regular expression
-    //  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //  if (!emailRegex.test(email)) {
-    //      res.status(400);
-    //      throw new Error("Invalid email format.");
-    //  }
-//ends email validatipn
 
     checkValidEmail(email,res);
 
@@ -82,19 +73,25 @@ const createDepartment = asyncHandler(async(req,res)=>{
     //hashing is done
     //validatioin is done
     console.log(DeptName);
+    
     if (!DeptName || !DeptInchargeName || !DeptInchargeEmail || !DeptInchargePassword){
         res.status(400);
         throw new Error("All fields are mandatory")
     }
 
-    //  // Email validation using regular expression
-    //  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //  if (!emailRegex.test(DeptInchargeEmail)) {
-    //      res.status(400);
-    //      throw new Error("Invalid email format for department in-charge.");
-    //  }
-    //  //Email validation ends
-    //function created.
+    const upperCaseDeptName = DeptName.toUpperCase();
+
+    const deptNameRegistered = await DepartmentSchema.findOne({DeptName:upperCaseDeptName})
+    if(deptNameRegistered){
+        res.status(409);
+        throw new Error("Department already registered");
+    }
+
+    const deptEmailRegistered = await DepartmentSchema.findOne({DeptInchargeEmail:DeptInchargeEmail})
+    if(deptEmailRegistered){
+        res.status(409);
+        throw new Error(`Email has alraedy been registered with department : ${deptEmailRegistered.DeptName}`);
+    }
     checkValidEmail(DeptInchargeEmail,res);
 
 
@@ -102,7 +99,7 @@ const createDepartment = asyncHandler(async(req,res)=>{
     const hashedPassword = await bcrypt.hash(DeptInchargePassword , salt);
     console.log(hashedPassword)
     const dept = await DepartmentSchema.create({
-        DeptName,
+        DeptName:upperCaseDeptName,
         DeptInchargeName,
         DeptInchargeEmail,
         DeptInchargePassword:hashedPassword
@@ -129,13 +126,6 @@ const adminRegister=asyncHandler(async(req,res)=>
   
              const {email,password}=req.body;
 
-    //           // Email validation using regular expression
-    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // if (!emailRegex.test(email)) {
-    //     res.status(400);
-    //     throw new Error("Invalid email format.");
-    // }
-    // //ends email validation
 
     checkValidEmail(email,res);
 
