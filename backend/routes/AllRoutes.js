@@ -1,13 +1,11 @@
 const express = require("express")
 const router = express.Router();
+const {createDepartment , loginAdmin } = require("../controllers/AllControllers");
 
-const {adminLogin, createDepartment,adminRegister } = require("../controllers/AllControllers");
 
-//creating a admin(no frontend needed)
-router.post("/registeradmin",adminRegister)
 
 //admin login routers
-router.post("/loginadmin",adminLogin);
+router.post("/loginadmin",loginAdmin);
 
 
 //department creation

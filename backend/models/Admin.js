@@ -1,8 +1,9 @@
-const mongoose = require("mongoose");
 
+// server/models/Admin.js
+
+const mongoose = require('mongoose');
 
 const adminSchema = new mongoose.Schema({
-
     email:
     {
         type: String,
@@ -13,9 +14,8 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-})
+});
 
+const Admin = mongoose.model('Admin', adminSchema);
 
-const adminModel=mongoose.model("adminmodal",adminSchema);
-
-module.exports=adminModel;
+module.exports = Admin;

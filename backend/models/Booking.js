@@ -7,6 +7,9 @@ const BookingSchema = new mongoose.Schema({
     type: String,
     required:[true , "Please add the deppt name"],
   },
+  EmployeeName:{
+     type:String,
+  },
   HallName: {
     type: String,
     required:[true , "Please add the hall name"],

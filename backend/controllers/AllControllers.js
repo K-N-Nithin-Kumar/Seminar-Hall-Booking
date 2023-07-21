@@ -1,84 +1,60 @@
 const mongoose=require("mongoose")
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler")
-const AdminSchema = require("../models/Admin");
 const DepartmentSchema = require("../models/Department")
 const BookingSchema=require("../models/Booking")
-
+const Admin = require('../models/Admin');
 //admin login function
-const adminLogin = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+// server/controllers/adminController.js
 
-    console.log(email,password)
 
-    if (!email || !password) {
-        res.json({ error: "Please Provide Valid Credentials" });
+
+
+const validateEmail = (email)=>{
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
+const loginAdmin = asyncHandler(async(req,res)=>{
+    //fetch the email and the password from the user(req.body)
+    const {email , password} = req.body;
+    //if any of the field is empty alert all the fileds are mandatory
+    if(!email || !password){
+        res.status(400);
+        throw new Error("All fields are mandatory")
     }
-//lljk
-//Prashanth
-     // Email validation using regular expression
-     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-     if (!emailRegex.test(email)) {
-         res.status(400);
-         throw new Error("Invalid email format.");
-     }
-//ends email validatipn
-
-
-    const AdminLogin = await AdminSchema.findOne({ email: email })
-    
-    console.log(AdminLogin)
-    
- 
-    if (AdminLogin === null || AdminLogin.password !== password) {
-        res.json({ error: "Please Provide Valid admin credentials" })
-    } else {
-        res.json({ message: "Succesfully Logged In" })
+    //fetch the user by using his email idfrom the database
+    const admin = await Admin.findOne({email});
+    //if that user exists and the entered password mathches with hashed password in the database
+    //here we are comparing the password with the hashed password of the user 
+    //if matches provide the access token to the response
+    if(admin && (await bcrypt.compare(password , admin.password))){
+        res.status(200).json({message:"Login success"})
+    }
+    else{
+        res.status(400);
+        throw new Error("Invalid credentials")  
     }
 });
 
 
-/*
-  Code wriiten by Keshav(YOU)
 
-  "READ THIS:Instead of try catch we can directly use the express-async-handler package to handle asyncronus events
-  Reference I sent in group read"
-
-  const createDepartment = async (req, res) => {
-    const { DeptName, DeptInchargeName, DeptInchargeEmail, DeptInchargePasswrd } = req.body;
-
-    try {
-        const new_department = await DepartmentSchema.create({ DeptName, DeptInchargeName, DeptInchargeEmail, DeptInchargePasswrd });
-        res.status(200).json(new_department);s
-    } catch (err) {
-        res.status(400).json({ err });
-    }
+  
 
 
-   
 
 
-}
-*/
 
 //Department Creation function
 const createDepartment = asyncHandler(async(req,res)=>{
     const { DeptName, DeptInchargeName, DeptInchargeEmail, DeptInchargePassword } = req.body;
-    // "ISSUE"
-    // DeptName is not getting from the request 
-    // path error
-    //below log printing undefined resolve this 
-    //hashing is done
-    //validatioin is done
-    console.log(DeptName);
     if (!DeptName || !DeptInchargeName || !DeptInchargeEmail || !DeptInchargePassword){
         res.status(400);
         throw new Error("All fields are mandatory")
     }
 
-     // Email validation using regular expression
-     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-     if (!emailRegex.test(DeptInchargeEmail)) {
+
+     if (!validateEmail(DeptInchargeEmail)) {
          res.status(400);
          throw new Error("Invalid email format for department in-charge.");
      }
@@ -110,28 +86,6 @@ const createDepartment = asyncHandler(async(req,res)=>{
 
 
 
-//admin register
-const adminRegister=async(req,res)=>
-{
-  
-             const {email,password}=req.body;
-
-              // Email validation using regular expression
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        res.status(400);
-        throw new Error("Invalid email format.");
-    }
-    //ends email validation
-
-             try{
-                const new_admin=await AdminSchema.create({email,password});
-                res.status(200).json(new_admin);
-             }catch (err) {
-                res.status(400).json({ err });
-            }
-             
-}
 
 
-module.exports = { adminLogin,createDepartment,adminRegister}
+module.exports = {createDepartment,loginAdmin}

@@ -12,7 +12,7 @@ app.use(express.json());
 
 
 //connection to database
-mongoose.connect("mongodb+srv://poojarii018:70NuGdSg0yRhVxOM@cluster0.qzbygiw.mongodb.net/").then(() => {
+mongoose.connect("mongodb+srv://admin:admin@ineuron.8h2plss.mongodb.net").then(() => {
     console.log("Connection SuccesFull to the database");
 }).catch((err) => {
     console.log(err)
