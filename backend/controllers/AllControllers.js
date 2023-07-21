@@ -7,9 +7,6 @@ const Admin = require('../models/Admin');
 //admin login function
 // server/controllers/adminController.js
 
-
-
-
 const validateEmail = (email)=>{
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
@@ -37,14 +34,6 @@ const loginAdmin = asyncHandler(async(req,res)=>{
     }
 });
 
-
-
-  
-
-
-
-
-
 //Department Creation function
 const createDepartment = asyncHandler(async(req,res)=>{
     const { DeptName, DeptInchargeName, DeptInchargeEmail, DeptInchargePassword } = req.body;
@@ -52,14 +41,11 @@ const createDepartment = asyncHandler(async(req,res)=>{
         res.status(400);
         throw new Error("All fields are mandatory")
     }
-
-
      if (!validateEmail(DeptInchargeEmail)) {
          res.status(400);
          throw new Error("Invalid email format for department in-charge.");
      }
      //Email validation ends
-
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(DeptInchargePassword , salt);
