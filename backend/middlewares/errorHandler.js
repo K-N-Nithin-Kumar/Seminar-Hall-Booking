@@ -16,6 +16,9 @@ const errorHandler = (err , req,res , next)=>{
       case constants.VALIDATION_ERROR:
         res.json({title:"Validation failed",message:err.message , stackTrace:err.stack});
         break;
+      case constants.RESOURCE_EXISTS:
+        res.json({title:"Resource already exists",message:err.message , stackTrace:err.stack});
+        break
       case constants.NOT_FOUND:
         res.json({title:"Not found",message:err.message , stackTrace:err.stack});
         break;

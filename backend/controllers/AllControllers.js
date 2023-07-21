@@ -4,6 +4,16 @@ const asyncHandler = require("express-async-handler")
 const AdminSchema = require("../models/Admin");
 const DepartmentSchema = require("../models/Department")
 const BookingSchema=require("../models/Booking")
+const validator=require("validator")
+
+
+//email validator function
+const checkValidEmail = (email,res) => {
+    if (!validator.isEmail(email)) {
+        res.status(400);
+        throw new Error("Invalid email format.");
+    }
+}
 
 //admin login function
 const adminLogin = asyncHandler(async (req, res) => {
@@ -17,21 +27,22 @@ const adminLogin = asyncHandler(async (req, res) => {
 //lljk
 //Prashanth
      // Email validation using regular expression
-     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-     if (!emailRegex.test(email)) {
-         res.status(400);
-         throw new Error("Invalid email format.");
-     }
+    //  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //  if (!emailRegex.test(email)) {
+    //      res.status(400);
+    //      throw new Error("Invalid email format.");
+    //  }
 //ends email validatipn
 
+    checkValidEmail(email,res);
 
     const AdminLogin = await AdminSchema.findOne({ email: email })
     
     console.log(AdminLogin)
-    
+   
  
     if (AdminLogin === null || AdminLogin.password !== password) {
-        res.json({ error: "Please Provide Valid admin credentials" })
+        res.json({ error: "Incorrect email or password" })
     } else {
         res.json({ message: "Succesfully Logged In" })
     }
@@ -76,13 +87,15 @@ const createDepartment = asyncHandler(async(req,res)=>{
         throw new Error("All fields are mandatory")
     }
 
-     // Email validation using regular expression
-     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-     if (!emailRegex.test(DeptInchargeEmail)) {
-         res.status(400);
-         throw new Error("Invalid email format for department in-charge.");
-     }
-     //Email validation ends
+    //  // Email validation using regular expression
+    //  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //  if (!emailRegex.test(DeptInchargeEmail)) {
+    //      res.status(400);
+    //      throw new Error("Invalid email format for department in-charge.");
+    //  }
+    //  //Email validation ends
+    //function created.
+    checkValidEmail(DeptInchargeEmail,res);
 
 
     const salt = await bcrypt.genSalt(10);
@@ -111,27 +124,35 @@ const createDepartment = asyncHandler(async(req,res)=>{
 
 
 //admin register
-const adminRegister=async(req,res)=>
+const adminRegister=asyncHandler(async(req,res)=>
 {
   
              const {email,password}=req.body;
 
-              // Email validation using regular expression
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        res.status(400);
-        throw new Error("Invalid email format.");
-    }
-    //ends email validation
+    //           // Email validation using regular expression
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(email)) {
+    //     res.status(400);
+    //     throw new Error("Invalid email format.");
+    // }
+    // //ends email validation
 
+    checkValidEmail(email,res);
+
+    const RegisterAdmin = await AdminSchema.findOne({ email: email })
+    if(RegisterAdmin !== null){
+        res.status(409);
+        throw new Error("User already exists!!!");
+    }
+    else{
              try{
                 const new_admin=await AdminSchema.create({email,password});
                 res.status(200).json(new_admin);
              }catch (err) {
                 res.status(400).json({ err });
             }
-             
-}
+    }
+});
 
 
 module.exports = { adminLogin,createDepartment,adminRegister}
